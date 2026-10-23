@@ -1,24 +1,862 @@
-<!DOCTYPE html><html><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>SaadCare Rx Pro v2.0</title><script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script><style>:root{--b:#0b3d91;--g:#c9a227}*{font-family:Arial,sans-serif;box-sizing:border-box}body{background:#eef2f7;padding:10px;margin:0}.p{background:#fff;padding:20px;border-radius:12px;max-width:1050px;margin:auto}.h{display:flex;justify-content:space-between;border-bottom:3px solid var(--b);padding-bottom:12px}.lg{width:110px;height:110px;border-radius:50%;border:3px solid var(--g)}label{font-size:10px;font-weight:700;display:block;margin-top:8px;text-transform:uppercase}input,textarea,select{width:100%;padding:8px;border:1.5px solid #cbd5e1;border-radius:6px;font-size:13px;margin-top:3px}.r{display:flex;gap:8px;flex-wrap:wrap}.r>div{flex:1;min-width:120px}.s{background:#eef6ff;border-left:4px solid var(--b);padding:6px 10px;font-weight:700;color:var(--b);margin:15px 0 8px 0;font-size:12px}.g4{display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:8px}table{width:100%;border-collapse:collapse}th{background:#eef6ff;padding:6px;font-size:11px}td{padding:3px}.bt{padding:8px 14px;border:none;border-radius:6px;font-weight:600;cursor:pointer;font-size:12px}.bb{background:var(--b);color:#fff}.bg{background:#e2e8f0}.bn{background:#16a34a;color:#fff}.bmi{background:#f0f9ff;border:2px solid #0ea5e9;border-radius:10px;padding:10px;text-align:center}.bmiv{font-size:22px;font-weight:800;color:var(--b)}</style></head><body><div style="max-width:1050px;margin:auto"><div style="display:flex;justify-content:space-between;margin-bottom:10px;flex-wrap:wrap;gap:8px"><b style="color:var(--b)">SaadCare Rx Pro v2.0 - BMI+98 Meds</b><div><button class="bt bg" onclick="exportExcel()">Excel</button> <button class="bt bn" onclick="saveRx()">Save</button> <button class="bt bb" onclick="window.print()">Print</button></div></div><div class="p"><div class="h"><div style="display:flex;gap:12px;align-items:center"><div class="lg" style="background:var(--b);color:var(--g);display:flex;align-items:center;justify-content:center;font-size:40px;font-weight:800">SC</div><div><h2 style="margin:0;color:var(--b);font-size:20px">Dr. Mir Nur-Us Saad</h2><p style="margin:4px 0 0 0;font-size:11px"><b>BCS (Health), MPH, M.Phil</b><br>Public Health Specialist<br><span style="background:var(--b);color:#fff;padding:2px 8px;border-radius:10px;font-size:9px">SaadCare Rx Pro v2.0</span></p></div></div><div style="text-align:right;font-size:11px;line-height:1.4"><b style="color:var(--b)">Shurokkha Diagnostic</b><br>Kishoreganj<br><b>01711179468</b><div id="qrcode" style="margin-top:6px"></div></div></div>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>RxPro - General Prescription System</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+<style>
+:root{--b:#0b3d91;--danger:#ef4444;--success:#16a34a;--warning:#f59e0b;--gray:#64748b;}
+*{font-family:'Segoe UI',Arial,sans-serif;box-sizing:border-box}
+body{background:#eef2f7;padding:8px;margin:0}
+input,textarea,select{width:100%;padding:7px;border:1.5px solid #cbd5e1;border-radius:6px;font-size:13px;margin-top:3px}
+input:focus,textarea:focus,select:focus{outline:none;border-color:var(--b)}
+input.required{border-color:var(--danger)}
+label{font-size:10px;font-weight:700;display:block;margin-top:6px;text-transform:uppercase;color:var(--gray)}
+.r{display:flex;gap:6px;flex-wrap:wrap}
+.r>div{flex:1;min-width:110px}
+.s{background:#eef6ff;border-left:4px solid var(--b);padding:5px 10px;font-weight:700;color:var(--b);margin:12px 0 6px 0;font-size:12px}
+.g4{display:grid;grid-template-columns:repeat(auto-fit,minmax(120px,1fr));gap:6px}
+table{width:100%;border-collapse:collapse;margin:6px 0}
+th{background:#eef6ff;padding:5px;font-size:11px;color:var(--gray);text-align:left}
+td{padding:4px 5px;border-bottom:1px solid #e2e8f0}
+.bt{padding:7px 14px;border:none;border-radius:6px;font-weight:600;cursor:pointer;font-size:12px;margin:2px}
+.bt.bb{background:var(--b);color:#fff}
+.bt.bg{background:#e2e8f0;color:#334155}
+.bt.bn{background:var(--success);color:#fff}
+.bt.bd{background:var(--danger);color:#fff}
+.bt.bv{background:var(--warning);color:#fff}
+.bmi{background:#f0f9ff;border:2px solid #0ea5e9;border-radius:10px;padding:8px;text-align:center}
+.bmiv{font-size:20px;font-weight:800;color:var(--b)}
+.hidden{display:none!important}
+.card{background:#fff;padding:14px;border-radius:10px;box-shadow:0 2px 8px rgba(0,0,0,0.06)}
+.header-bar{display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;flex-wrap:wrap;gap:8px}
+.app-title{color:var(--b);font-size:15px;font-weight:700}
+.toolbar{display:flex;gap:5px;flex-wrap:wrap}
+.modal{position:fixed;inset:0;background:rgba(0,0,0,0.5);display:flex;align-items:center;justify-content:center;z-index:1000}
+.modal-content{background:#fff;padding:20px;border-radius:10px;max-width:500px;width:90%;max-height:90vh;overflow-y:auto}
+.modal h3{margin-top:0;color:var(--b)}
+.file-upload{border:2px dashed #cbd5e1;border-radius:8px;padding:20px;text-align:center;margin:10px 0;cursor:pointer}
+.file-upload:hover{border-color:var(--b)}
+.img-preview{max-width:120px;max-height:120px;border-radius:8px;margin-top:10px;border:1px solid #ddd}
+.rx-header{border-bottom:3px solid var(--b);padding-bottom:12px;margin-bottom:16px;display:flex;justify-content:space-between;align-items:flex-start;flex-wrap:wrap;gap:12px}
+.clinic-info{flex:1;min-width:250px}
+.clinic-name{font-size:18px;font-weight:800;color:var(--b);margin:0 0 4px 0}
+.clinic-addr{font-size:11px;color:var(--gray);margin:2px 0}
+.rx-meta{text-align:right;font-size:11px;color:var(--gray)}
+.rx-id{font-size:13px;font-weight:700;color:var(--b)}
+.rx-title{text-align:center;font-size:16px;font-weight:800;color:var(--b);margin:12px 0;letter-spacing:2px}
+.signature-area{margin-top:20px;display:flex;justify-content:space-between;flex-wrap:wrap;gap:20px}
+.sig-block{flex:1;min-width:200px;border-top:1px solid #334155;padding-top:6px;font-size:11px;text-align:center}
+.history-item{border-bottom:1px solid #eee;padding:8px 0;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px}
+.history-item b{color:var(--b)}
+.history-actions{font-size:11px}
+.toast{position:fixed;bottom:20px;right:20px;background:#334155;color:#fff;padding:10px 16px;border-radius:6px;z-index:2000;box-shadow:0 4px 12px rgba(0,0,0,0.3);animation:slideIn 0.3s ease}
+@keyframes slideIn{from{transform:translateX(100%)}to{transform:translateX(0)}}
+.checkbox-group{display:flex;gap:8px;flex-wrap:wrap;font-size:11px;margin-top:4px}
+.checkbox-group label{font-weight:400;text-transform:none;font-size:11px;margin:0;display:flex;align-items:center;gap:4px}
+.allergy-warning{background:#fef2f2;border:1px solid #fecaca;color:#991b1b;padding:8px;border-radius:6px;font-size:11px;margin:8px 0;display:none}
+.badge{display:inline-block;padding:1px 6px;border-radius:10px;font-size:9px;font-weight:700;margin-left:6px}
+.badge.safe{background:#dcfce7;color:#166534}
+.badge.warn{background:#fef3c7;color:#92400e}
+.badge.alert{background:#fee2e2;color:#991b1b}
+.print-only{display:none}
+@media print{
+  body{background:#fff!important;padding:0}
+  .no-print,.no-print *{display:none!important}
+  .print-only{display:block!important}
+  .card{box-shadow:none;border:1px solid #ddd}
+  .rx-header{border-bottom:2px solid var(--b)}
+  table{border-collapse:collapse}
+  td{border-bottom:1px solid #999;padding:4px}
+  .signature-area{margin-top:30px;page-break-inside:avoid}
+  .sig-block{border-top:1px solid #000}
+}
+</style>
+</head>
+<body>
+<div class="card" style="max-width:1100px;margin:0 auto;">
+  <div class="header-bar no-print">
+    <div class="app-title">RxPro <span style="font-size:12px;font-weight:400;color:var(--gray)">General Prescription System</span></div>
+    <div class="toolbar">
+      <span id="connStatus" style="font-size:10px;padding:4px 8px;border-radius:4px;background:#e2e8f0;color:var(--gray);margin-right:8px">&#9679; Connecting...</span>
+      <button class="bt bv" onclick="openSettings()">&#9881; Clinic Setup</button>
+      <button class="bt bb" onclick="printRx()">&#9009; Print Rx</button>
+      <button class="bt bg" onclick="exportExcel()">&#128199; Excel</button>
+      <button class="bt bn" onclick="saveRx()">&#128190; Save</button>
+      <button class="bt bd" onclick="clearForm()">&#128461; Clear</button>
+    </div>
+  </div>
 
-<div class="s">1. Patient Info</div><div class="r"><div><label>Name *</label><input id="pName" oninput="genQR()"></div><div style="max-width:80px"><label>Age</label><input id="pAge"></div><div style="max-width:100px"><label>Sex</label><select id="pSex"><option>Male</option><option>Female</option><option>Child</option></select></div><div style="max-width:130px"><label>Date</label><input type="date" id="pDate"></div></div><div class="r"><div><label>Mobile</label><input id="pId"></div><div><label>Address</label><input id="pAddr"></div></div>
+  <!-- Prescription Header (clinic info, Rx no, date) -->
+  <div class="rx-header" style="display:flex;justify-content:space-between;align-items:flex-start;flex-wrap:wrap;gap:12px">
+    <div style="display:flex;gap:12px;align-items:flex-start">
+      <img id="rxLogo" src="" alt="Logo" style="max-width:80px;max-height:80px;display:none;border-radius:6px">
+      <div class="clinic-info">
+        <div class="clinic-name" id="rxClinicName">Your Clinic Name</div>
+        <div class="clinic-addr" id="rxClinicAddr"></div>
+        <div class="clinic-addr" id="rxClinicReg">Reg. No.: ______</div>
+      </div>
+    </div>
+    <div class="rx-meta">
+      <div class="rx-id">Rx No: <span id="rxNo">00001</span></div>
+      <div>Date: <span id="rxDate"></span></div>
+    </div>
+  </div>
+  <div class="rx-title" id="rxDocTitle">PRESCRIPTION</div>
 
-<div class="s">2. Past History</div><div class="g4"><div><label>Past Illness</label><input id="pastIll"></div><div><label>Surgery</label><input id="pastSurg"></div><div><label>Allergy</label><input id="drugAll"></div><div><label>Current Med</label><input id="hCurrentMed"></div></div><div class="g4" style="margin-top:6px"><div><label>HTN</label><select id="hHTN"><option>No</option><option>Yes</option></select></div><div><label>DM</label><select id="hDM"><option>No</option><option>Yes</option></select></div><div><label>Smoking</label><select id="hSmoke"><option>No</option><option>Yes</option></select></div><div><label>Family Hx</label><input id="hFamily"></div></div>
+  <!-- Clinic Setup Modal -->
+  <div class="modal hidden" id="settingsModal">
+    <div class="modal-content">
+      <h3>&#128199; Clinic / Doctor Profile</h3>
+      <p style="font-size:11px;color:var(--gray);margin:6px 0 14px 0">Customize your prescription header. These details appear on every printed prescription.</p>
+      <div class="r">
+        <div><label>Clinic / Hospital Name</label><input id="sClinicName" placeholder="e.g. City General Clinic"></div>
+        <div><label>Doctor Name</label><input id="sDoctorName" placeholder="e.g. Dr. John Smith"></div>
+      </div>
+      <div class="r">
+        <div><label>Registration / License No.</label><input id="sRegNo" placeholder="e.g. MCR-12345"></div>
+        <div><label>Phone</label><input id="sPhone" placeholder="+1 (555) 000-0000"></div>
+      </div>
+      <div class="r">
+        <div><label>Email</label><input id="sEmail" type="email" placeholder="clinic@example.com"></div>
+        <div><label>Address</label><input id="sAddress" placeholder="123 Main Street, City"></div>
+      </div>
+      <div><label>Doctor Signature (text)</label><input id="sSignature" placeholder="Dr. John Smith, MD"></div>
+      <div class="file-upload" onclick="document.getElementById('sLogo').click()">
+        <div style="font-size:11px;color:var(--gray)">&#128206; Clinic Logo (optional)</div>
+        <img id="logoPreview" class="img-preview hidden" alt="Logo preview">
+        <input type="file" id="sLogo" accept="image/*" class="hidden" onchange="previewLogo(this)">
+      </div>
+      <div style="display:flex;justify-content:flex-end;gap:8px;margin-top:16px">
+        <button class="bt bg" onclick="closeSettings()">Cancel</button>
+        <button class="bt bb" onclick="saveSettings()">Save Profile</button>
+      </div>
+    </div>
+  </div>
 
-<div class="s">3. General Exam + BMI AUTO</div><div class="g4"><div><label>BP</label><input id="exBP" placeholder="120/80"></div><div><label>Pulse</label><input id="exPulse"></div><div><label>Temp</label><input id="exTemp"></div><div><label>SpO2</label><input id="exSpo2"></div></div><div class="g4" style="margin-top:8px"><div><label>Weight kg *</label><input id="exWt" type="number" oninput="calcBMI()" placeholder="65" style="border-color:green;font-weight:700"></div><div><label>Height cm *</label><input id="exHtCm" type="number" oninput="calcBMI()" placeholder="170" style="border-color:green;font-weight:700"></div><div><label>Height ft</label><input id="exHt" placeholder="5'6" oninput="calcBMIft()"></div><div><label>RBS</label><input id="exRbs"></div></div><div class="r" style="margin-top:10px"><div><div class="bmi"><div style="font-size:10px;font-weight:700">BMI AUTO</div><div id="bmiDisplay" class="bmiv">--</div><div id="bmiStatus" style="font-size:10px;background:#e2e8f0;padding:3px 8px;border-radius:10px">Enter Wt & Ht</div><input id="exBmi" type="hidden"></div></div><div style="flex:2"><label>Signs</label><div style="display:flex;gap:8px;flex-wrap:wrap;font-size:11px;margin-top:4px"><label><input type="checkbox"> Anemia</label><label><input type="checkbox"> Jaundice</label><label><input type="checkbox"> Edema</label><label><input type="checkbox"> Dehydration</label></div></div></div>
+  <!-- Section 1: Patient Information -->
+  <div class="s">1. Patient Information</div>
+  <div class="r">
+    <div><label>Name <span style="color:var(--danger)">*</span></label><input id="pName" oninput="genQR(); autoSave()" required></div>
+    <div style="min-width:90px"><label>Date of Birth</label><input type="date" id="pDob" oninput="calcAgeFromDob(); autoSave()"></div>
+    <div style="min-width:70px"><label>Age</label><input id="pAge" oninput="autoSave()"></div>
+    <div style="min-width:90px"><label>Sex</label><select id="pSex" oninput="autoSave()"><option>Male</option><option>Female</option><option>Child</option><option>Other</option></select></div>
+  </div>
+  <div class="r">
+    <div><label>Mobile</label><input id="pId" oninput="autoSave()"></div>
+    <div><label>Address</label><input id="pAddr" oninput="autoSave()"></div>
+  </div>
 
-<div class="s">4. Special Exam</div><div class="r"><div><label>CVS</label><input id="spCVS"></div><div><label>Chest</label><input id="spChest"></div></div><div class="r"><div><label>Abdomen</label><input id="spAbd"></div><div><label>CNS</label><input id="spCNS"></div></div>
+  <!-- Section 2: Past History -->
+  <div class="s">2. Past Medical History</div>
+  <div class="g4">
+    <div><label>Past Illness</label><input id="pastIll" oninput="autoSave()"></div>
+    <div><label>Surgery</label><input id="pastSurg" oninput="autoSave()"></div>
+    <div><label>Drug Allergy</label><input id="drugAll" oninput="autoSave(); checkAllergies()"></div>
+    <div><label>Current Medications</label><input id="hCurrentMed" oninput="autoSave()"></div>
+  </div>
+  <div class="g4" style="margin-top:6px">
+    <div><label>Hypertension</label><select id="hHTN" oninput="autoSave()"><option>No</option><option>Yes</option></select></div>
+    <div><label>Diabetes</label><select id="hDM" oninput="autoSave()"><option>No</option><option>Yes</option></select></div>
+    <div><label>Smoking</label><select id="hSmoke" oninput="autoSave()"><option>No</option><option>Yes</option></select></div>
+    <div><label>Family History</label><input id="hFamily" oninput="autoSave()"></div>
+  </div>
+  <div class="allergy-warning" id="allergyWarning">
+    &#9888; <strong>Allergy Alert:</strong> Patient is allergic to <span id="allergyText"></span>. Review prescribed medications.
+  </div>
 
-<div class="s">5. Chief Complaints</div><textarea id="pCC" rows="2"></textarea>
-<div class="s">6. Diagnosis</div><input id="pDiag">
-<div class="s">7. Rx - Prescription (98 Meds DB)</div><div style="font-size:10px;color:#666;margin-bottom:6px">Type 2 letters: Napa, Seclo, Losar, Azith, Monas etc - Auto suggest</div><table id="medTable"><tr><th>Medicine (Search)</th><th>Dose</th><th>Days</th><th>Advice</th><th></th></tr><tr><td><input list="meds" placeholder="Napa / Seclo..." style="border-color:var(--b)"></td><td><input placeholder="1+0+1"></td><td><input placeholder="7d"></td><td><input placeholder="After meal"></td><td><button onclick="this.parentNode.parentNode.remove()">X</button></td></tr></table><button class="bt bg" style="margin-top:6px" onclick="addRow()">+ Add Medicine</button>
+  <!-- Section 3: General Exam + BMI -->
+  <div class="s">3. General Examination &amp; BMI</div>
+  <div class="g4">
+    <div><label>BP</label><input id="exBP" placeholder="120/80" oninput="autoSave()"></div>
+    <div><label>Pulse</label><input id="exPulse" placeholder="/min" oninput="autoSave()"></div>
+    <div><label>Temp</label><input id="exTemp" placeholder="&#x00B0;F" oninput="autoSave()"></div>
+    <div><label>SpO&#8322;</label><input id="exSpo2" placeholder="%" oninput="autoSave()"></div>
+  </div>
+  <div class="g4" style="margin-top:8px">
+    <div><label>Weight (kg) <span style="color:var(--danger)">*</span></label><input id="exWt" type="number" step="0.1" oninput="calcBMI(); autoSave()" placeholder="65" required></div>
+    <div><label>Height (cm) <span style="color:var(--danger)">*</span></label><input id="exHtCm" type="number" step="0.1" oninput="calcBMI(); autoSave()" placeholder="170" required></div>
+    <div><label>Height (ft&#8242;in&#8243;)</label><input id="exHt" placeholder="5'6" oninput="calcBMIft(); autoSave()"></div>
+    <div><label>RBS</label><input id="exRbs" placeholder="mg/dL" oninput="autoSave()"></div>
+  </div>
+  <div class="r" style="margin-top:10px">
+    <div>
+      <div class="bmi">
+        <div style="font-size:10px;font-weight:700">BMI AUTO</div>
+        <div id="bmiDisplay" class="bmiv">--</div>
+        <div id="bmiStatus" style="font-size:10px;background:#e2e8f0;padding:3px 8px;border-radius:10px">Enter Wt &amp; Ht</div>
+        <input id="exBmi" type="hidden">
+      </div>
+    </div>
+    <div style="flex:2">
+      <label>Clinical Signs</label>
+      <div class="checkbox-group">
+        <label><input type="checkbox" onchange="autoSave()"> Anemia</label>
+        <label><input type="checkbox" onchange="autoSave()"> Jaundice</label>
+        <label><input type="checkbox" onchange="autoSave()"> Edema</label>
+        <label><input type="checkbox" onchange="autoSave()"> Dehydration</label>
+        <label><input type="checkbox" onchange="autoSave()"> Pallor</label>
+        <label><input type="checkbox" onchange="autoSave()"> Cyanosis</label>
+      </div>
+    </div>
+  </div>
 
-<div class="r" style="margin-top:12px"><div><div class="s" style="margin-top:0">Investigations</div><textarea id="pTests" rows="3"></textarea></div><div><div class="s" style="margin-top:0">Advice</div><textarea id="pAdvice" rows="3"></textarea></div></div>
-<div class="r" style="margin-top:16px"><div><label>Follow-up</label><input type="date" id="pNext"></div><div style="text-align:right"><br>___<br><b>Dr. Mir Nur-Us Saad</b><br><span style="font-size:10px">SaadCare Rx Pro v2.0</span></div></div>
-</div><div style="background:#fff;padding:12px;border-radius:10px;margin-top:12px"><h4>History (<span id="count">0</span>) <input id="search" placeholder="Search" oninput="renderHistory()" style="float:right;width:120px;padding:4px"></h4><div id="historyList"></div></div><div style="text-align:center;margin-top:10px;font-size:10px;color:#666">Powered by <b style="color:var(--b)">SaadCare Rx Pro v2.0</b> • BMI Auto + 98 Meds</div></div>
-<datalist id="meds"><option value="Napa 500mg"><option value="Napa Extra"><option value="Seclo 20mg"><option value="Maxpro 20mg"><option value="Fimoxyclav 625mg"><option value="Cef-3 200mg"><option value="Zithrin 500mg"><option value="Ciprocin 500mg"><option value="Monas 10mg"><option value="Alatrol 10mg"><option value="Calbo-D"><option value="Xinc B"><option value="Losartan 50mg"><option value="Amlodipine 5mg"><option value="Metformin 500mg"><option value="Atorvastatin 10mg"><option value="Ecosprin 75mg"><option value="Salbutamol Inhaler"><option value="ORS"><option value="Domperidone 10mg"><option value="Adovas Syrup"><option value="D-Rise 20000"><option value="Inj Ceftriaxone 1g"></datalist>
+  <!-- Section 4: Special Exam -->
+  <div class="s">4. Special Examination</div>
+  <div class="r">
+    <div><label>CVS</label><input id="spCVS" oninput="autoSave()"></div>
+    <div><label>Chest</label><input id="spChest" oninput="autoSave()"></div>
+  </div>
+  <div class="r">
+    <div><label>Abdomen</label><input id="spAbd" oninput="autoSave()"></div>
+    <div><label>CNS</label><input id="spCNS" oninput="autoSave()"></div>
+  </div>
+
+  <!-- Section 5: Chief Complaints -->
+  <div class="s">5. Chief Complaints</div>
+  <textarea id="pCC" rows="2" oninput="autoSave()" placeholder="e.g. Fever, headache, cough for 3 days..."></textarea>
+
+  <!-- Section 6: Diagnosis -->
+  <div class="s">6. Diagnosis</div>
+  <input id="pDiag" oninput="autoSave()" placeholder="Provisional / confirmed diagnosis...">
+
+  <!-- Section 7: Prescription -->
+  <div class="s">7. Prescription (98+ Medicines)</div>
+  <div style="font-size:10px;color:#666;margin-bottom:6px">Type medicine name for auto-suggest. Allergy alert checks against recorded drug allergy.</div>
+  <table id="medTable">
+    <tr>
+      <th>Medicine (Brand / Generic)</th>
+      <th>Generic</th>
+      <th>Dose</th>
+      <th>Days</th>
+      <th>Refills</th>
+      <th>Advice</th>
+      <th></th>
+    </tr>
+    <tr>
+      <td><input list="meds" placeholder="e.g. Napa / Paracetamol" oninput="checkMedAllergy(this); autoFillGeneric(this)"></td>
+      <td><input placeholder="Auto-filled" readonly></td>
+      <td><input placeholder="1-0-1"></td>
+      <td><input placeholder="7d"></td>
+      <td><input placeholder="0"></td>
+      <td><input placeholder="After meal"></td>
+      <td><button class="bt bd" style="padding:4px 8px" onclick="removeRow(this)">&#215;</button></td>
+    </tr>
+  </table>
+  <button class="bt bb" style="margin-top:6px" onclick="addRow()">+ Add Medicine</button>
+
+  <!-- Section 8: Investigations & Advice -->
+  <div class="r" style="margin-top:12px">
+    <div style="flex:1">
+      <div class="s" style="margin-top:0">Investigations / Tests</div>
+      <textarea id="pTests" rows="3" oninput="autoSave()" placeholder="e.g. CBC, LFT, X-ray Chest..."></textarea>
+    </div>
+    <div style="flex:1">
+      <div class="s" style="margin-top:0">Advice to Patient</div>
+      <textarea id="pAdvice" rows="3" oninput="autoSave()" placeholder="e.g. Rest, fluids, follow-up if fever persists..."></textarea>
+    </div>
+  </div>
+  <div class="r" style="margin-top:16px">
+    <div style="min-width:150px"><label>Follow-up Date</label><input type="date" id="pNext" oninput="autoSave()"></div>
+    <div class="signature-area">
+      <div class="sig-block">
+        <div id="rxSigName" style="font-weight:700;color:var(--b)">Dr. Doctor Name</div>
+        <div style="font-size:10px;color:var(--gray)">Reg: 00000</div>
+      </div>
+      <div style="text-align:right">
+        <div style="font-size:10px;color:var(--gray)">Patient Signature</div>
+        <div style="border-top:1px solid #334155;padding-top:4px;font-size:11px">________________</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- History Panel -->
+  <div class="no-print" style="background:#fff;padding:12px;border-radius:10px;margin-top:16px">
+    <h4 style="margin:0 0 8px 0">History (<span id="count">0</span>)
+      <input id="search" placeholder="Search patients..." oninput="renderHistory()" style="float:right;width:150px;padding:4px;font-size:11px">
+    </h4>
+    <div id="historyList"></div>
+  </div>
+
+  <!-- Draft indicator -->
+  <div id="draftIndicator" class="no-print" style="font-size:10px;color:var(--warning);margin-top:6px;text-align:center">&#128401; Draft auto-saved</div>
+
+  <div class="no-print" style="text-align:center;margin-top:10px;font-size:10px;color:#666">Powered by <b style="color:var(--b)">RxPro</b> • General Prescription System • BMI Auto + 98+ Meds</div>
+</div>
+
+<datalist id="meds">
+<option value="Paracetamol 500mg | Napa">
+<option value="Paracetamol 650mg | Napa Extra">
+<option value="Paracetamol 125mg/5ml | Napa Syrup">
+<option value="Omeprazole 20mg | Seclo">
+<option value="Omeprazole 20mg | Maxpro">
+<option value="Amoxicillin 500mg | Fimoxyclav">
+<option value="Amoxicillin 625mg | Fimoxyclav Forte">
+<option value="Cefixime 200mg | Cef-3">
+<option value="Azithromycin 500mg | Zithrin">
+<option value="Azithromycin 250mg | Azith">
+<option value="Ciprofloxacin 500mg | Ciprocin">
+<option value="Montelukast 10mg | Monas">
+<option value="Loratadine 10mg | Alatrol">
+<option value="Cetirizine 10mg | Cetrine">
+<option value="Calcium + Vitamin D3 | Calbo-D">
+<option value="Zinc + B Complex | Xinc B">
+<option value="Losartan 50mg | Losar">
+<option value="Losartan 100mg | Losar-H">
+<option value="Amlodipine 5mg | Amlodipine">
+<option value="Amlodipine 10mg | Amlong">
+<option value="Metformin 500mg | Glyciphage">
+<option value="Metformin 850mg | Glyciphage SR">
+<option value="Atorvastatin 10mg | Storvas">
+<option value="Atorvastatin 20mg | Storvas-20">
+<option value="Aspirin 75mg | Ecosprin">
+<option value="Salbutamol Inhaler 100mcg | Ventolin">
+<option value="ORS Powder | Electral">
+<option value="Domperidone 10mg | Domstal">
+<option value="Multivitamin Syrup | Adovas">
+<option value="Vitamin D3 20000 IU | D-Rise">
+<option value="Ceftriaxone 1g Injection | Ceftriaxone">
+<option value="Ibuprofen 400mg | Brufen">
+<option value="Ibuprofen 100mg/5ml | Brufen Syrup">
+<option value="Diclofenac 50mg | Voveran">
+<option value="Diclofenac 50mg | Vooveran SR">
+<option value="Drotaverine 80mg | Drotin">
+<option value="Drotaverine 40mg | Drotin DS">
+<option value="Ranitidine 150mg | Rantac">
+<option value="Pantoprazole 40mg | Pantocid">
+<option value="Rabeprazole 20mg | Rabium">
+<option value="Levocetirizine 5mg | Levocet">
+<option value="Fexofenadine 120mg | Allegra">
+<option value="Atenolol 50mg | Tenormin">
+<option value="Metoprolol 50mg | Betaloc">
+<option value="Propranolol 40mg | Inderal">
+<option value="Enalapril 5mg | Renitec">
+<option value="Ramipril 5mg | Ramace">
+<option value="Hydrochlorothiazide 25mg | Esidrex">
+<option value="Furosemide 40mg | Lasix">
+<option value="Spironolactone 25mg | Aldactone">
+<option value="Glimepiride 2mg | Amaryl">
+<option value="Gliclazide 80mg | Diamicron">
+<option value="Sitagliptin 100mg | Januvia">
+<option value="Voglibose 0.2mg | Voglibose">
+<option value="Pioglitazone 15mg | Pioz">
+<option value="Rosuvastatin 10mg | Rosuva">
+<option value="Clopidogrel 75mg | Clopilet">
+<option value="Aspirin 150mg | Ecosprin">
+<option value="Etoricoxib 90mg | Etorix">
+<option value="Aceclofenac 100mg | Zerodol">
+<option value="Aceclofenac + Paracetamol | Zerodol-P">
+<option value="Tramadol 50mg | Tramadol">
+<option value="Tramadol 100mg | Tramadol SR">
+<option value="Gabapentin 300mg | Gabantin">
+<option value="Pregabalin 75mg | Pregabalin">
+<option value="Ondansetron 4mg | Ondem">
+<option value="Domperidone 10mg | Domstal">
+<option value="Loperamide 2mg | Imodium">
+<option value="Racecadotril 10mg | Racecadotril">
+<option value="Budesonide Inhaler | Pulmicort">
+<option value="Salbutamol + Ipratropium | Duolin">
+<option value="Tiotropium 18mcg | Spiriva">
+<option value="Montelukast + Levocetirizine | Montair LC">
+<option value="Fluticasone + Salmeterol | Seretide">
+<option value="Dextromethorphan 15mg | Benadryl DM">
+<option value="Chlorpheniramine 4mg | Chlorpheniramine">
+<option value="Ambroxol 30mg | Ambroxol">
+<option value="Saline Nasal Drops | Nasivion">
+<option value="Isotine Eye Drops | Isotine">
+<option value="Ciprofloxacin Eye Drops | Ciplox">
+<option value="Moxifloxacin Eye Drops | Vigamox">
+<option value="Artificial Tears | Tears Naturale">
+<option value="Clotrimazole 1% Cream | Candid">
+<option value="Mupirocin 2% Cream | Bactroban">
+<option value="Silver Sulfadiazine Cream | Silvadene">
+<option value="Calamine Lotion | Calamine">
+<option value="Hydrocortisone 1% Cream | Hydrocortisone">
+<option value="Terbinafine 250mg | Terbinafine">
+<option value="Fluconazole 150mg | Fluconazole">
+<option value="Metronidazole 400mg | Flagyl">
+<option value="Tinidazole 500mg | Tiniba">
+<option value="Norfloxacin 400mg | Norfloxacin">
+<option value="Ofloxacin 200mg | Ofloxacin">
+<option value="Cefuroxime 500mg | Cefuroxime">
+<option value="Amoxicillin + Clavulanate 625mg | Augmentin">
+<option value="Azithromycin 200mg/5ml | Azithral">
+<option value="Cefpodoxime 200mg | Cefpodoxime">
+<option value="Levofloxacin 500mg | Levofloxacin">
+<option value="Moxifloxacin 400mg | Moxifloxacin">
+<option value="Linezolid 600mg | Linezolid">
+<option value="Vancomycin 500mg | Vancomycin">
+<option value="Meropenem 1g | Meropenem">
+<option value="Cefoperazone + Sulbactam | Cefoperazone">
+<option value="Piperacillin + Tazobactam | Piperacillin">
+</datalist>
+
+
+<div class="toast hidden" id="toast"></div>
+
+<!-- QR Code placeholder (hidden, used for data) -->
+<div id="qrcode" style="display:none"></div>
+
 <script>
-document.getElementById('pDate').valueAsDate=new Date();let qrcode=new QRCode(document.getElementById("qrcode"),{width:70,height:70});function genQR(){let t=document.getElementById('pName').value||'Patient';qrcode.clear();qrcode.makeCode(t+" | SaadCare v2.0 BMI:"+document.getElementById('exBmi').value);}genQR();function addRow(){let t=document.getElementById('medTable');let r=t.insertRow(-1);r.innerHTML='<td><input list="meds"></td><td><input></td><td><input></td><td><input></td><td><button onclick="this.parentNode.parentNode.remove()">X</button></td>';}
-function calcBMI(){let w=parseFloat(document.getElementById('exWt').value);let hCm=parseFloat(document.getElementById('exHtCm').value);let b=document.getElementById('bmiDisplay');let s=document.getElementById('bmiStatus');if(w&&hCm){let h=hCm/100;let bmi=(w/(h*h)).toFixed(1);document.getElementById('exBmi').value=bmi;b.textContent=bmi;if(bmi<18.5){s.textContent='Underweight';s.style.background='#f59e0b';s.style.color='#fff';}else if(bmi<25){s.textContent='Normal ✅';s.style.background='#22c55e';s.style.color='#fff';}else if(bmi<30){s.textContent='Overweight';s.style.background='#f97316';s.style.color='#fff';}else{s.textContent='Obese ⚠️';s.style.background='#ef4444';s.style.color='#fff';}genQR();}else{b.textContent='--';s.textContent='Enter Wt & Ht';s.style.background='#e2e8f0';}}
-function calcBMIft(){let ft=document.getElementById('exHt').value;if(!ft.includes("'"))return;let p=ft.split("'");let cm=parseFloat(p[0])*30.48+parseFloat(p[1])*2.54;if(cm>50){document.getElementById('exHtCm').value=cm.toFixed(1);calcBMI();}}
-let db=JSON.parse(localStorage.getItem('saadcare_v2_db')||'[]');function saveRx(){let d={name:document.getElementById('pName').value,date:document.getElementById('pDate').value,mobile:document.getElementById('pId').value,bmi:document.getElementById('exBmi').value};if(!d.name){alert('Name required');return;}db.unshift(d);localStorage.setItem('saadcare_v2_db',JSON.stringify(db));renderHistory();alert('Saved v2.0 BMI:'+d.bmi);}function renderHistory(){let s=document.getElementById('search').value.toLowerCase();let f=db.filter(x=>(x.name+x.mobile).toLowerCase().includes(s));document.getElementById('count').innerText=db.length;let h='';for(let i=0;i<f.length;i++){let x=f[i];h+='<div style="border-bottom:1px solid #eee;padding:6px 0"><b>'+x.name+'</b> BMI:'+(x.bmi||'-')+' - '+x.mobile+'</div>';}document.getElementById('historyList').innerHTML=h;}function exportExcel(){if(db.length==0){alert('No data');return;}let ws=XLSX.utils.json_to_sheet(db);let wb=XLSX.utils.book_new();XLSX.utils.book_append_sheet(wb,ws,"Patients");XLSX.writeFile(wb,"SaadCare_v2.xlsx");}renderHistory();
-</script></body></html>
+document.getElementById('pDate')?.valueAsDate || null;
+let qrcode = new QRCode(document.getElementById("qrcode"), { width: 100, height: 100 });
+
+// ---- Settings / Profile ----
+let settings = JSON.parse(localStorage.getItem('rxpro_settings') || '{}');
+function openSettings(){
+  document.getElementById('sClinicName').value = settings.clinicName || '';
+  document.getElementById('sDoctorName').value = settings.doctorName || '';
+  document.getElementById('sRegNo').value = settings.regNo || '';
+  document.getElementById('sPhone').value = settings.phone || '';
+  document.getElementById('sEmail').value = settings.email || '';
+  document.getElementById('sAddress').value = settings.address || '';
+  document.getElementById('sSignature').value = settings.signature || '';
+  const prev = document.getElementById('logoPreview');
+  prev.src = settings.logo || '';
+  prev.className = settings.logo ? 'img-preview' : 'img-preview hidden';
+  document.getElementById('settingsModal').classList.remove('hidden');
+}
+function closeSettings(){ document.getElementById('settingsModal').classList.add('hidden'); }
+function previewLogo(input){
+  if(input.files && input.files[0]){
+    const reader = new FileReader();
+    reader.onload = function(e){
+      document.getElementById('logoPreview').src = e.target.result;
+      document.getElementById('logoPreview').className = 'img-preview';
+    };
+    reader.readAsDataURL(input.files[0]);
+  }
+}
+function saveSettings(){
+  settings = {
+    clinicName: document.getElementById('sClinicName').value,
+    doctorName: document.getElementById('sDoctorName').value,
+    regNo: document.getElementById('sRegNo').value,
+    phone: document.getElementById('sPhone').value,
+    email: document.getElementById('sEmail').value,
+    address: document.getElementById('sAddress').value,
+    signature: document.getElementById('sSignature').value,
+    logo: document.getElementById('logoPreview').src || ''
+  };
+  localStorage.setItem('rxpro_settings', JSON.stringify(settings));
+  applySettings();
+  closeSettings();
+  showToast('Clinic profile saved');
+}
+function applySettings(){
+  document.getElementById('rxClinicName').textContent = settings.clinicName || 'Your Clinic Name';
+  const parts = [settings.address, settings.phone, settings.email].filter(Boolean);
+  document.getElementById('rxClinicAddr').textContent = parts.join(' • ');
+  document.getElementById('rxClinicReg').textContent = 'Reg. No.: ' + (settings.regNo || '______');
+  const sigEl = document.getElementById('rxSigName');
+  sigEl.textContent = settings.signature || settings.doctorName || 'Doctor Name';
+  const sigParent = sigEl.parentElement;
+  if(sigParent){
+    const regDiv = sigParent.querySelector('div:nth-child(2)');
+    if(regDiv) regDiv.textContent = 'Reg: ' + (settings.regNo || '______');
+  }
+  const logoImg = document.getElementById('rxLogo');
+  if(settings.logo){
+    logoImg.src = settings.logo;
+    logoImg.style.display = 'block';
+  }
+  document.title = (settings.clinicName || 'RxPro') + ' - Prescription System';
+}
+applySettings();
+
+// ---- Prescription Number ----
+let rxNo = parseInt(localStorage.getItem('rxpro_rxno') || '0') + 1;
+document.getElementById('rxNo').textContent = rxNo.toString().padStart(5, '0');
+document.getElementById('rxDate').textContent = new Date().toLocaleDateString();
+
+// ---- Age from DOB ----
+function calcAgeFromDob(){
+  const dob = document.getElementById('pDob').value;
+  if(!dob) return;
+  const birth = new Date(dob);
+  const today = new Date();
+  let age = today.getFullYear() - birth.getFullYear();
+  const m = today.getMonth() - birth.getMonth();
+  if(m < 0 || (m === 0 && today.getDate() < birth.getDate())) age--;
+  document.getElementById('pAge').value = age > 0 ? age : 0;
+  autoSave();
+}
+
+// ---- BMI ----
+function calcBMI(){
+  let w = parseFloat(document.getElementById('exWt').value);
+  let hCm = parseFloat(document.getElementById('exHtCm').value);
+  let b = document.getElementById('bmiDisplay');
+  let s = document.getElementById('bmiStatus');
+  if(w && hCm){
+    let h = hCm/100;
+    let bmi = (w/(h*h)).toFixed(1);
+    document.getElementById('exBmi').value = bmi;
+    b.textContent = bmi;
+    let cls = 'badge safe';
+    let txt = 'Normal';
+    if(bmi < 18.5){ txt = 'Underweight'; cls = 'badge warn'; }
+    else if(bmi < 25){ txt = 'Normal &#10004;'; cls = 'badge safe'; }
+    else if(bmi < 30){ txt = 'Overweight'; cls = 'badge warn'; }
+    else { txt = 'Obese &#9888;'; cls = 'badge alert'; }
+    s.innerHTML = '<span class="'+cls+'">'+txt+'</span>';
+    s.style.background = '';
+    s.style.color = '';
+    genQR();
+  } else {
+    b.textContent = '--';
+    s.textContent = 'Enter Wt & Ht';
+    s.style.background = '#e2e8f0';
+    s.style.color = '';
+  }
+}
+function calcBMIft(){
+  let ft = document.getElementById('exHt').value;
+  if(!ft.includes("'")) return;
+  let p = ft.split("'");
+  let cm = parseFloat(p[0])*30.48 + parseFloat(p[1])*2.54;
+  if(cm > 50){ document.getElementById('exHtCm').value = cm.toFixed(1); calcBMI(); }
+}
+
+// ---- Medicine Table ----
+function addRow(){
+  let t = document.getElementById('medTable');
+  let r = t.insertRow(-1);
+  r.innerHTML = '<td><input list="meds" placeholder="e.g. Napa / Paracetamol" oninput="checkMedAllergy(this); autoFillGeneric(this)"></td>' +
+    '<td><input placeholder="Auto-filled" readonly></td>' +
+    '<td><input placeholder="1-0-1"></td>' +
+    '<td><input placeholder="7d"></td>' +
+    '<td><input placeholder="0"></td>' +
+    '<td><input placeholder="After meal"></td>' +
+    '<td><button class="bt bd" style="padding:4px 8px" onclick="removeRow(this)">&#215;</button></td>';
+}
+function removeRow(btn){
+  btn.parentNode.parentNode.remove();
+  checkAllergies();
+  autoSave();
+}
+function autoFillGeneric(input){
+  const val = input.value;
+  const match = val.split('|')[1]?.trim();
+  const row = input.closest('tr');
+  if(row && match){
+    row.cells[1].querySelector('input').value = match;
+  } else if(row){
+    row.cells[1].querySelector('input').value = '';
+  }
+}
+function checkMedAllergy(input){
+  const allergy = document.getElementById('drugAll').value.toLowerCase();
+  const med = input.value.toLowerCase();
+  if(!allergy || !med) return;
+  if(med.includes(allergy.split(',')[0].trim())){
+    input.style.borderColor = 'var(--danger)';
+    showToast('&#9888; Possible allergy match: ' + allergy);
+  } else {
+    input.style.borderColor = '';
+  }
+}
+function checkAllergies(){
+  const allergy = document.getElementById('drugAll').value.toLowerCase();
+  const warning = document.getElementById('allergyWarning');
+  if(!allergy){ warning.style.display = 'none'; return; }
+  let found = false;
+  document.querySelectorAll('#medTable td:nth-child(1) input').forEach(inp => {
+    if(inp.value.toLowerCase().includes(allergy.split(',')[0].trim())){
+      inp.style.borderColor = 'var(--danger)';
+      found = true;
+    }
+  });
+  if(found){
+    document.getElementById('allergyText').textContent = allergy;
+    warning.style.display = 'block';
+  } else {
+    warning.style.display = 'none';
+  }
+}
+
+// ---- QR Code ----
+function genQR(){
+  let name = document.getElementById('pName').value || 'Patient';
+  let bmi = document.getElementById('exBmi').value || '--';
+  let rx = document.getElementById('rxNo').textContent || '00000';
+  qrcode.clear();
+  qrcode.makeCode('RxPro #' + rx + ' | ' + name + ' | BMI: ' + bmi + ' | RxPro');
+}
+
+// ---- Save / History ----
+let db = JSON.parse(localStorage.getItem('rxpro_db') || '[]');
+function saveRx(){
+  let name = document.getElementById('pName').value;
+  if(!name){ showToast('Patient name is required'); document.getElementById('pName').focus(); return; }
+
+  const meds = [];
+  document.querySelectorAll('#medTable tr').forEach((row, idx) => {
+    if(idx === 0) return;
+    const inputs = row.querySelectorAll('input');
+    if(inputs[0].value.trim()){
+      meds.push({
+        med: inputs[0].value,
+        generic: inputs[1].value,
+        dose: inputs[2].value,
+        days: inputs[3].value,
+        refills: inputs[4].value,
+        advice: inputs[5].value
+      });
+    }
+  });
+
+  const d = {
+    id: Date.now(),
+    rxNo: rxNo,
+    name: name,
+    dob: document.getElementById('pDob').value,
+    age: document.getElementById('pAge').value,
+    sex: document.getElementById('pSex').value,
+    date: document.getElementById('pDate').value || new Date().toLocaleDateString(),
+    mobile: document.getElementById('pId').value,
+    address: document.getElementById('pAddr').value,
+    pastIll: document.getElementById('pastIll').value,
+    pastSurg: document.getElementById('pastSurg').value,
+    drugAll: document.getElementById('drugAll').value,
+    hCurrentMed: document.getElementById('hCurrentMed').value,
+    hHTN: document.getElementById('hHTN').value,
+    hDM: document.getElementById('hDM').value,
+    hSmoke: document.getElementById('hSmoke').value,
+    hFamily: document.getElementById('hFamily').value,
+    exBP: document.getElementById('exBP').value,
+    exPulse: document.getElementById('exPulse').value,
+    exTemp: document.getElementById('exTemp').value,
+    exSpo2: document.getElementById('exSpo2').value,
+    exWt: document.getElementById('exWt').value,
+    exHtCm: document.getElementById('exHtCm').value,
+    exHt: document.getElementById('exHt').value,
+    exRbs: document.getElementById('exRbs').value,
+    exBmi: document.getElementById('exBmi').value,
+    spCVS: document.getElementById('spCVS').value,
+    spChest: document.getElementById('spChest').value,
+    spAbd: document.getElementById('spAbd').value,
+    spCNS: document.getElementById('spCNS').value,
+    pCC: document.getElementById('pCC').value,
+    pDiag: document.getElementById('pDiag').value,
+    meds: meds,
+    pTests: document.getElementById('pTests').value,
+    pAdvice: document.getElementById('pAdvice').value,
+    pNext: document.getElementById('pNext').value,
+    savedAt: new Date().toISOString()
+  };
+  db.unshift(d);
+  localStorage.setItem('rxpro_db', JSON.stringify(db));
+  rxNo++;
+  document.getElementById('rxNo').textContent = rxNo.toString().padStart(5, '0');
+  localStorage.setItem('rxpro_rxno', rxNo.toString());
+  renderHistory();
+  showToast('Prescription saved #' + d.rxNo);
+  genQR();
+}
+
+function loadRx(id){
+  const d = db.find(x => x.id === id);
+  if(!d) return;
+  document.getElementById('pName').value = d.name;
+  document.getElementById('pDob').value = d.dob || '';
+  document.getElementById('pAge').value = d.age || '';
+  document.getElementById('pSex').value = d.sex || 'Male';
+  document.getElementById('pDate').value = d.date || '';
+  document.getElementById('pId').value = d.mobile || '';
+  document.getElementById('pAddr').value = d.address || '';
+  document.getElementById('pastIll').value = d.pastIll || '';
+  document.getElementById('pastSurg').value = d.pastSurg || '';
+  document.getElementById('drugAll').value = d.drugAll || '';
+  document.getElementById('hCurrentMed').value = d.hCurrentMed || '';
+  document.getElementById('hHTN').value = d.hHTN || 'No';
+  document.getElementById('hDM').value = d.hDM || 'No';
+  document.getElementById('hSmoke').value = d.hSmoke || 'No';
+  document.getElementById('hFamily').value = d.hFamily || '';
+  document.getElementById('exBP').value = d.exBP || '';
+  document.getElementById('exPulse').value = d.exPulse || '';
+  document.getElementById('exTemp').value = d.exTemp || '';
+  document.getElementById('exSpo2').value = d.exSpo2 || '';
+  document.getElementById('exWt').value = d.exWt || '';
+  document.getElementById('exHtCm').value = d.exHtCm || '';
+  document.getElementById('exHt').value = d.exHt || '';
+  document.getElementById('exRbs').value = d.exRbs || '';
+  document.getElementById('exBmi').value = d.exBmi || '';
+  document.getElementById('bmiDisplay').textContent = d.exBmi || '--';
+  document.getElementById('spCVS').value = d.spCVS || '';
+  document.getElementById('spChest').value = d.spChest || '';
+  document.getElementById('spAbd').value = d.spAbd || '';
+  document.getElementById('spCNS').value = d.spCNS || '';
+  document.getElementById('pCC').value = d.pCC || '';
+  document.getElementById('pDiag').value = d.pDiag || '';
+  document.getElementById('pTests').value = d.pTests || '';
+  document.getElementById('pAdvice').value = d.pAdvice || '';
+  document.getElementById('pNext').value = d.pNext || '';
+
+  const medTable = document.getElementById('medTable');
+  while(medTable.rows.length > 1) medTable.deleteRow(1);
+  if(d.meds && d.meds.length){
+    d.meds.forEach(m => {
+      let r = medTable.insertRow(-1);
+      r.innerHTML = '<td><input list="meds" value="'+(m.med||'')+'" oninput="checkMedAllergy(this); autoFillGeneric(this)"></td>' +
+        '<td><input value="'+(m.generic||'')+'" readonly></td>' +
+        '<td><input value="'+(m.dose||'')+'"></td>' +
+        '<td><input value="'+(m.days||'')+'"></td>' +
+        '<td><input value="'+(m.refills||'')+'"></td>' +
+        '<td><input value="'+(m.advice||'')+'"></td>' +
+        '<td><button class="bt bd" style="padding:4px 8px" onclick="removeRow(this)">&#215;</button></td>';
+    });
+  }
+  checkAllergies();
+  calcBMI();
+  genQR();
+  showToast('Loaded prescription #' + d.rxNo);
+}
+function deleteRx(id){
+  if(!confirm('Delete this prescription record?')) return;
+  db = db.filter(x => x.id !== id);
+  localStorage.setItem('rxpro_db', JSON.stringify(db));
+  renderHistory();
+  showToast('Deleted');
+}
+function renderHistory(){
+  let s = document.getElementById('search').value.toLowerCase();
+  let f = db.filter(x => (x.name + ' ' + (x.mobile||'') + ' #'+(x.rxNo||'')).toLowerCase().includes(s));
+  document.getElementById('count').innerText = db.length;
+  let h = '';
+  for(let i = 0; i < f.length; i++){
+    let x = f[i];
+    h += '<div class="history-item"><div><b>#'+x.rxNo+' '+x.name+'</b><br><span style="font-size:10px;color:var(--gray)">'+x.date+' • '+x.mobile+' • BMI: '+(x.exBmi||'-')+'</span></div><div class="history-actions"><button class="bt" onclick="loadRx('+x.id+')" style="padding:3px 8px;font-size:10px">Load</button> <button class="bt bd" onclick="deleteRx('+x.id+')" style="padding:3px 8px;font-size:10px">Del</button></div></div>';
+  }
+  document.getElementById('historyList').innerHTML = h || '<div style="font-size:11px;color:var(--gray);padding:8px">No records yet.</div>';
+}
+
+function clearForm(){
+  if(!confirm('Clear all fields? Unsaved data will be lost.')) return;
+  const inputs = document.querySelectorAll('input, textarea, select');
+  inputs.forEach(el => {
+    if(el.type === 'checkbox') el.checked = false;
+    else if(el.type === 'hidden') return;
+    else el.value = '';
+  });
+  document.getElementById('pDate').valueAsDate = new Date();
+  document.getElementById('pSex').value = 'Male';
+  document.getElementById('hHTN').value = 'No';
+  document.getElementById('hDM').value = 'No';
+  document.getElementById('hSmoke').value = 'No';
+  const medTable = document.getElementById('medTable');
+  while(medTable.rows.length > 1) medTable.deleteRow(1);
+  document.getElementById('bmiDisplay').textContent = '--';
+  document.getElementById('bmiStatus').textContent = 'Enter Wt & Ht';
+  document.getElementById('bmiStatus').style.background = '#e2e8f0';
+  document.getElementById('allergyWarning').style.display = 'none';
+  localStorage.removeItem('rxpro_draft');
+  document.getElementById('draftIndicator').style.display = 'none';
+  genQR();
+  showToast('Form cleared');
+}
+function exportExcel(){
+  if(db.length === 0){ showToast('No data to export'); return; }
+  let ws = XLSX.utils.json_to_sheet(db);
+  let wb = XLSX.utils.book_new();
+  XLSX.utils.book_append_sheet(wb, ws, "Prescriptions");
+  XLSX.writeFile(wb, "RxPro_Prescriptions.xlsx");
+}
+
+// ---- Auto-save Draft ----
+let draftTimeout;
+function autoSave(){
+  const draft = {
+    pName: document.getElementById('pName').value,
+    pDob: document.getElementById('pDob').value,
+    pAge: document.getElementById('pAge').value,
+    pSex: document.getElementById('pSex').value,
+    pId: document.getElementById('pId').value,
+    pAddr: document.getElementById('pAddr').value,
+    pastIll: document.getElementById('pastIll').value,
+    pastSurg: document.getElementById('pastSurg').value,
+    drugAll: document.getElementById('drugAll').value,
+    hCurrentMed: document.getElementById('hCurrentMed').value,
+    hHTN: document.getElementById('hHTN').value,
+    hDM: document.getElementById('hDM').value,
+    hSmoke: document.getElementById('hSmoke').value,
+    hFamily: document.getElementById('hFamily').value,
+    exBP: document.getElementById('exBP').value,
+    exPulse: document.getElementById('exPulse').value,
+    exTemp: document.getElementById('exTemp').value,
+    exSpo2: document.getElementById('exSpo2').value,
+    exWt: document.getElementById('exWt').value,
+    exHtCm: document.getElementById('exHtCm').value,
+    exHt: document.getElementById('exHt').value,
+    exRbs: document.getElementById('exRbs').value,
+    exBmi: document.getElementById('exBmi').value,
+    spCVS: document.getElementById('spCVS').value,
+    spChest: document.getElementById('spChest').value,
+    spAbd: document.getElementById('spAbd').value,
+    spCNS: document.getElementById('spCNS').value,
+    pCC: document.getElementById('pCC').value,
+    pDiag: document.getElementById('pDiag').value,
+    pTests: document.getElementById('pTests').value,
+    pAdvice: document.getElementById('pAdvice').value,
+    pNext: document.getElementById('pNext').value
+  };
+  localStorage.setItem('rxpro_draft', JSON.stringify(draft));
+  const ind = document.getElementById('draftIndicator');
+  ind.style.display = 'block';
+  clearTimeout(draftTimeout);
+  draftTimeout = setTimeout(() => { ind.style.display = 'none'; }, 3000);
+}
+const savedDraft = localStorage.getItem('rxpro_draft');
+if(savedDraft){
+  try {
+    const d = JSON.parse(savedDraft);
+    Object.keys(d).forEach(k => {
+      const el = document.getElementById(k);
+      if(el) el.value = d[k];
+    });
+    calcBMI();
+    document.getElementById('draftIndicator').style.display = 'block';
+    setTimeout(() => { document.getElementById('draftIndicator').style.display = 'none'; }, 3000);
+  } catch(e) {}
+}
+
+// ---- Print Prescription ----
+function printRx(){
+  if(!document.getElementById('pName').value){
+    showToast('Please enter patient name before printing');
+    document.getElementById('pName').focus();
+    return;
+  }
+  document.getElementById('rxSigName').textContent = settings.signature || settings.doctorName || 'Doctor Name';
+  const sigParent = document.getElementById('rxSigName')?.parentElement;
+  if(sigParent){
+    const regDiv = sigParent.querySelector('div:nth-child(2)');
+    if(regDiv) regDiv.textContent = 'Reg: ' + (settings.regNo || '______');
+  }
+  document.getElementById('rxDate').textContent = new Date().toLocaleDateString();
+  document.getElementById('rxDocTitle').textContent = 'PRESCRIPTION';
+  window.print();
+}
+
+// ---- Toast ----
+function showToast(msg){
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.remove('hidden');
+  setTimeout(() => t.classList.add('hidden'), 3000);
+}
+
+// ---- Init --->
+document.getElementById('pDate').valueAsDate = new Date();
+</script>
+<script src="api.js"></script>
+<script>
+loadRxCounter();
+loadRxList();
+loadSettings();
+genQR();
+</script>
+</body>
+</html>
